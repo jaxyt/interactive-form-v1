@@ -43,19 +43,23 @@ function shirtSize(size) {
 
 function checkShirtDesign(theme) {
     if (theme === 'js puns') {
-        $('option[value="cornflowerblue"]').show();
-        $('option[value="darkslategrey"]').show();
-        $('option[value="gold"]').show();
-        $('option[value="tomato"]').hide();
-        $('option[value="steelblue"]').hide();
-        $('option[value="dimgrey"]').hide();
+        tshirtColors.children().each(function (index) {
+            console.log($(this).text());
+            if (/\(JS Puns shirt only\)/g.test($(this).text())) {
+                $(this).show();
+            } else {
+                $(this).hide();
+            }
+        })
     } else if (theme === 'heart js') {
-        $('option[value="cornflowerblue"]').hide();
-        $('option[value="darkslategrey"]').hide();
-        $('option[value="gold"]').hide();
-        $('option[value="tomato"]').show();
-        $('option[value="steelblue"]').show();
-        $('option[value="dimgrey"]').show();
+        tshirtColors.children().each(function (index) {
+            console.log($(this).text());
+            if (/\(JS Puns shirt only\)/g.test($(this).text())) {
+                $(this).hide();
+            } else {
+                $(this).show();
+            }
+        })
     }
     return true;
 }
@@ -119,13 +123,10 @@ tshirtSizes.change((e)=>{
 });
 
 tshirtDesigns.change((e)=>{
-    console.log(e.target.value);
-    console.log(e.target.parentElement.lastElementChild.lastElementChild.value);
     console.log(checkShirtDesign(e.target.value)); 
 });
 
 tshirtColors.change((e)=>{
-    console.log(e.target.firstElementChild.textContent);
     console.log(checkShirtColor(e.target.value));
 });
 
