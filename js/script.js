@@ -18,6 +18,7 @@ const $paypal = $creditCard.next();
 const $bitcoin = $paypal.next();
 const $submit = $('button[type="submit"]');
 
+
 function isValidName(name) {
     const regex = /^[a-zA-Z]+ [a-zA-Z]+$/;
     return regex.test(name);
@@ -74,6 +75,7 @@ function checkActivityDates(activity) {
                 const $conflictTime = $conflict.text().match(regex)[0];
                 if ($activityTime === $conflictTime) {
                     console.log(`${$conflictName} conflicts with ${$activityName}!!`)
+                    $conflict.children().first().attr('disable');
                 } else {
                     console.log(`${$conflictName} is available.`)
                 }
