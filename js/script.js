@@ -1,11 +1,12 @@
 const form = $('form');
 const name = $('#name');
 const email = $('#mail');
+const jobRole = $('#title');
 const jobRoles = $('#title').children();
 const otherJob = $('#other');
-const tshirtSizes = $('#size').children();
-const tshirtDesigns = $('#design').children();
-const tshirtColors = $('#color').children();
+const tshirtSizes = $('#size');
+const tshirtDesigns = $('#design');
+const tshirtColors = $('#color');
 const activities = $('fieldset.activities').children('label');
 const paymentMethods = $('#payment').children();
 const creditCard = $('#credit-card');
@@ -18,21 +19,19 @@ const bitcoin = paypal.next();
 const submit = $('button[type="submit"]');
 
 function isValidName(name) {
-    const regex = /[a-zA-Z]+ [a-zA-Z]+/;
+    const regex = /^[a-zA-Z]+ [a-zA-Z]+$/;
     return regex.test(name);
 };
 
 function isValidEmail(email) {
-    const regex = /[^@]+@[^@.]+\.[^@.]{2,3})/;
+    const regex = /^[^@]+@[^@.]+\.[a-z]+$/i;
     return regex.test(email);
 };
 
 function checkJob(job) {
-    console.log(job);
-    if (job.textContent === 'Other') {
+    if(job === 'other'){
         otherJob.show();
-    }
-    else {
+    } else {
         otherJob.hide();
     }
     return true;
@@ -43,6 +42,21 @@ function shirtSize(size) {
 };
 
 function checkShirtDesign(theme) {
+    if (theme === 'js puns') {
+        $('option[value="cornflowerblue"]').show();
+        $('option[value="darkslategrey"]').show();
+        $('option[value="gold"]').show();
+        $('option[value="tomato"]').hide();
+        $('option[value="steelblue"]').hide();
+        $('option[value="dimgrey"]').hide();
+    } else if (theme === 'heart js') {
+        $('option[value="cornflowerblue"]').hide();
+        $('option[value="darkslategrey"]').hide();
+        $('option[value="gold"]').hide();
+        $('option[value="tomato"]').show();
+        $('option[value="steelblue"]').show();
+        $('option[value="dimgrey"]').show();
+    }
     return true;
 }
 
@@ -89,39 +103,42 @@ paypal.hide();
 bitcoin.hide();
 
 name.focusout((e)=>{
-    //console.log(isValidName(e));
+    console.log(isValidName(e.target.value));
 });
 
 email.focusout((e)=>{
-    console.log(isValidEmail(e));
+    console.log(isValidEmail(e.target.value));
 });
 
-jobRoles.change((e)=>{
-    console.log(checkJob(e));
+jobRole.change((e)=>{
+    console.log(checkJob(e.target.value));
 });
 
-tshirtSizes.click((e)=>{
-    console.log(shirtSize(e));
+tshirtSizes.change((e)=>{
+    console.log(shirtSize(e.target.value));
 });
 
-tshirtDesigns.click((e)=>{
-    console.log(checkShirtDesign(e)); 
+tshirtDesigns.change((e)=>{
+    console.log(e.target.value);
+    console.log(e.target.parentElement.lastElementChild.lastElementChild.value);
+    console.log(checkShirtDesign(e.target.value)); 
 });
 
-tshirtColors.click((e)=>{
-    console.log(checkShirtColor(e));
+tshirtColors.change((e)=>{
+    console.log(e.target.firstElementChild.textContent);
+    console.log(checkShirtColor(e.target.value));
 });
 
 activities.on('click', (e)=>{
-    console.log(checkActivityDates(e));
+    console.log(checkActivityDates(e.target.value));
 });
 
 paymentMethods.on('click', (e)=>{
-    console.log(checkPaymentMethod(e));
+    console.log(checkPaymentMethod(e.target.value));
 });
 
 ccNumber.focusout((e)=>{
-    console.log(isValidCCNumber(e));
+    console.log(isValidCCNumber(e.target.value));
 });
 
 submit.on('click', (e)=>{
