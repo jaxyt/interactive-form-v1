@@ -1,22 +1,17 @@
-const $form = $('form');
+
 const $name = $('#name');
 const $nameError = $(`<span id="name-error"></span>`);
 const $email = $('#mail');
 const $emailError = $(`<span id="email-error"></span>`);
 const $jobRole = $('#title');
-const $jobRoles = $('#title').children();
-const $otherJob = $('#other');
 const $otherJobField = $('#other-title');
-const $tshirtSizes = $('#size');
 const $tshirtDesigns = $('#design');
 const $tshirtColors = $('#color');
 const $activities = $('fieldset.activities').children('label');
 const $activityError = $(`<span id="activity-error"></span>`);
 let total = 0;
 const $payment = $('#payment');
-const $paymentMethods = $('#payment').children();
 const $creditCard = $('#credit-card');
-const $ccFields = $creditCard.children();
 const $ccNumber = $('#cc-num');
 const $ccNumError = $(`<span id="ccNum-error"></span>`);
 const $zipCode = $('#zip');
@@ -28,6 +23,7 @@ const $bitcoin = $paypal.next();
 const $submit = $('button[type="submit"]');
 let $total = $(`<span>${total}</span>`);
 
+//creates and appends unobtrusive elements to the page that will be used in functions
 $('fieldset.activities').append($total);
 $('label[for="name"]').append($nameError);
 $('label[for="mail"]').append($emailError);
@@ -38,7 +34,7 @@ $('label[for="cvv"]').append($cvvError);
 
 
 
-
+//compares the input name to a regular expression and returns a boolean value
 function isValidName(name) {
     const regex = /^[a-zA-Z]+ [a-zA-Z]+$/;
     if (!regex.test(name)) {
@@ -52,6 +48,7 @@ function isValidName(name) {
     return regex.test(name);
 };
 
+//same as isValidName but for email
 function isValidEmail(email) {
     const regex = /^[^@]+@[^@.]+\.[a-z]+$/i;
     if (!regex.test(email)) {
@@ -65,6 +62,8 @@ function isValidEmail(email) {
     return regex.test(email);
 };
 
+
+//displays the 'other' text input when 'other' is selected and hides it when its not
 function checkJob(job) {
     if(job === 'other'){
         $otherJobField.show();
@@ -75,8 +74,10 @@ function checkJob(job) {
 };
 
 
+//hides and displays the colors label and its color options depending on the users design selection
 function checkShirtDesign(theme) {
     if (theme === 'js puns') {
+        $tshirtColors.val('cornflowerblue');
         $tshirtColors.children().each(function (index) {
             if (/\(JS Puns shirt only\)/g.test($(this).text())) {
                 $(this).show();
@@ -86,6 +87,7 @@ function checkShirtDesign(theme) {
         })
         $tshirtColors.show();
     } else if (theme === 'heart js') {
+        $tshirtColors.val('tomato');
         $tshirtColors.children().each(function (index) {
             if (/\(JS Puns shirt only\)/g.test($(this).text())) {
                 $(this).hide();
@@ -100,6 +102,8 @@ function checkShirtDesign(theme) {
     return true;
 }
 
+
+//compares all activites for conflicting dates, and disables the conflicts, while also updating the total purchase ammount
 function checkActivityDates(activity) {
     const $activityName = $(activity).attr('name');
     const isChecked = activity.checked;
@@ -147,6 +151,7 @@ function checkActivityDates(activity) {
     return true;
 };
 
+//hides and displays the various payment methods based on the users choice
 function checkPaymentMethod(paymentMethod) {
     if (paymentMethod === 'credit card') {
         $creditCard.show();
@@ -172,6 +177,8 @@ function checkPaymentMethod(paymentMethod) {
     return true;
 };
 
+
+//these check the credit card fields for valid information
 function isValidCCNumber(ccNum) {
     const regex = /^\d{13,16}$/;
     return regex.test(ccNum);
@@ -187,18 +194,20 @@ function isValidCVV(cvvNum) {
     return regex.test(cvvNum);
 };
 
-function checkSubmissionComplete() {
-    return true;
-}
 
+
+//focuses on the name input box, and hides the dependent selections upon the page loading
 $name.trigger('focus');
 $otherJobField.hide();
 $tshirtColors.hide();
-$creditCard.hide();
+$payment.val('credit card');
+$creditCard.show();
 $paypal.hide();
 $bitcoin.hide();
 $submit.hide();
 
+
+//these place all the necessary event listeners to trigger the previous functions
 $name.keyup((e)=>{
     isValidName(e.target.value);
 });
@@ -238,35 +247,39 @@ $cvvNumber.keyup((e)=>{
     isValidCVV(e.target.value);
 });
 
+
+//the final form validation that checks the most important fields and displays error messages if the user input is incorrect
 $submit.on('click', (e)=>{
-    e.preventDefault();
     if (!isValidName($name.val())) {
         console.log(`invalid name`);
+        e.preventDefault();
     };
     if (!isValidEmail($email.val())) {
         console.log(`invalid email`);
+        e.preventDefault();
     };
     if (total < 100) {
         $activityError.text(' You must select at least one activity');
         $activityError.css('color', 'red');
+        e.preventDefault();
     } else {
         $activityError.text('');
     };
     if ($creditCard.attr('style') !== "none") {
         if (isValidCCNumber($ccNumber.val()) === false) {
-
             $ccNumError.text(` a valid credit card number is between 13 and 16 digits long`);
             $ccNumError.css('color', 'red');
             $ccNumber.css('border-color', 'red');
+            e.preventDefault();
         } else {
             $ccNumError.text(``);
             $ccNumber.css('border-color', 'grey');
         };
         if (isValidZip($zipCode.val()) === false) {
-
             $zipError.text(` a valid zip code consists of 5 digits`);
             $zipError.css('color', 'red');
             $zipCode.css('border-color', 'red');
+            e.preventDefault();
         } else {
             $zipError.text(``);
             $zipCode.css('border-color', 'grey');
@@ -285,6 +298,7 @@ $submit.on('click', (e)=>{
                 $cvvError.css('color', 'red');
                 $cvvNumber.css('border-color', 'red');
             }
+            e.preventDefault();
         } else {
             $cvvError.text(``);
             $cvvNumber.css('border-color', 'grey');
