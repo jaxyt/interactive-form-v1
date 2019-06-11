@@ -200,47 +200,46 @@ $bitcoin.hide();
 $submit.hide();
 
 $name.keyup((e)=>{
-    console.log(isValidName(e.target.value));
+    isValidName(e.target.value);
 });
 
 
 $email.keyup((e)=>{
-    console.log(isValidEmail(e.target.value));
+    isValidEmail(e.target.value);
 });
 
 $jobRole.change((e)=>{
-    console.log(checkJob(e.target.value));
+    checkJob(e.target.value);
 });
 
 
 $tshirtDesigns.change((e)=>{
-    console.log(checkShirtDesign(e.target.value)); 
+    checkShirtDesign(e.target.value); 
 });
 
 
 $activities.on('click', (e)=>{
-    console.log(checkActivityDates(e.target));
+    checkActivityDates(e.target);
 });
 
 $payment.change((e)=>{
-    console.log(checkPaymentMethod(e.target.value));
+    checkPaymentMethod(e.target.value);
 });
 
 $ccNumber.keyup((e)=>{
-    console.log(isValidCCNumber(e.target.value));
+    isValidCCNumber(e.target.value);
 });
 
 $zipCode.keyup((e)=>{
-    console.log(isValidZip(e.target.value));
+    isValidZip(e.target.value);
 });
 
 $cvvNumber.keyup((e)=>{
-    console.log(isValidCVV(e.target.value));
+    isValidCVV(e.target.value);
 });
 
 $submit.on('click', (e)=>{
     e.preventDefault();
-    console.log($cvvNumber.val());
     if (!isValidName($name.val())) {
         console.log(`invalid name`);
     };

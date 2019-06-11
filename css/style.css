@@ -6,6 +6,15 @@
   box-sizing: border-box;
 }
 
+body {
+	background-image: url("https://source.unsplash.com/random");
+	height: 100%;
+	background-position: center;
+	background-repeat: no-repeat;
+	background-size: cover;
+}
+
+
 body,
 input,
 button {
@@ -14,8 +23,7 @@ button {
 
 body {
   font: 1em/1.5;
-  color: #184f68;
-	background: #accbd9;
+  color: #070707;
 }
 
 header {
@@ -38,7 +46,7 @@ a {
 
 form {
 	padding: .875em 1.875em 1.875em;
-	background: #85b5ca;
+	background: #7e868a91;
 }
 
 fieldset,
@@ -60,7 +68,7 @@ button {
 legend {
 	font-weight: 500;
 	padding-top: .5em;
-	border-top: 2px solid #679cb3;
+	border-top: 2px solid #808080;
 	margin-bottom: 1.125em;
 }
 
@@ -85,8 +93,8 @@ input {
 	font-size: 1em;
 	font-weight: 500;
 	padding: .8em;
-	background: #c1deeb;
-	border: 2px solid #c1deeb;
+	background: #f3f5f7;
+	border: 2px solid #8d8d8d;
 	outline: none;
 }
 
