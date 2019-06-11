@@ -4,10 +4,13 @@ const $email = $('#mail');
 const $jobRole = $('#title');
 const $jobRoles = $('#title').children();
 const $otherJob = $('#other');
+const $otherJobField = $('#other-title');
 const $tshirtSizes = $('#size');
 const $tshirtDesigns = $('#design');
 const $tshirtColors = $('#color');
 const $activities = $('fieldset.activities').children('label');
+let total = 0;
+const $payment = $('#payment');
 const $paymentMethods = $('#payment').children();
 const $creditCard = $('#credit-card');
 const $ccFields = $creditCard.children();
@@ -17,6 +20,11 @@ const $cvvNumber = $('#cvv');
 const $paypal = $creditCard.next();
 const $bitcoin = $paypal.next();
 const $submit = $('button[type="submit"]');
+let $total = $(`<span>${total}</span>`);
+
+$('fieldset.activities').append($total);
+
+
 
 
 function isValidName(name) {
@@ -31,9 +39,9 @@ function isValidEmail(email) {
 
 function checkJob(job) {
     if(job === 'other'){
-        $otherJob.show();
+        $otherJobField.show();
     } else {
-        $otherJob.hide();
+        $otherJobField.hide();
     }
     return true;
 };
@@ -63,44 +71,88 @@ function checkShirtDesign(theme) {
 function checkActivityDates(activity) {
     const $activityName = $(activity).attr('name');
     const isChecked = activity.checked;
-    const regex = /([a-zA-Z]+) (\d\d?[a-z][a-z]-\d\d?[a-z][a-z])/g;
-    if ($activityName !== 'all') {
-        const $activityTime = $(activity).parent('label').text().match(regex)[0];
-        console.log($activityName);
-        console.log($activityTime);
-        $activities.each(function(index) {
-            const $conflict = $(this);
-            const $conflictName = $conflict.children().first().attr('name');
-            if ($conflictName !== 'all' && $conflictName !== $activityName) {
-                const $conflictTime = $conflict.text().match(regex)[0];
-                if ($activityTime === $conflictTime) {
-                    console.log(`${$conflictName} conflicts with ${$activityName}!!`)
-                    $conflict.children().first().attr('disable');
-                } else {
-                    console.log(`${$conflictName} is available.`)
+    const priceRegex = /\d\d\d/;
+    const $activityPrice = $(activity).parent('label').text().match(priceRegex)[0];
+    if (isChecked) {
+        total += parseInt($activityPrice);
+        $total.text(`$${total}`);
+        if ($activityName !== 'all') {
+            const regex = /([a-zA-Z]+) (\d\d?[a-z][a-z]-\d\d?[a-z][a-z])/g;
+            const $activityTime = $(activity).parent('label').text().match(regex)[0];
+            $activities.each(function(index) {
+                const $conflict = $(this);
+                const $conflictName = $conflict.children().first().attr('name');
+                const $conflictPrice = $conflict.text().match(priceRegex)[0];
+                if ($conflictName !== 'all' && $conflictName !== $activityName) {
+                    const $conflictTime = $conflict.text().match(regex)[0];
+                    if ($activityTime === $conflictTime) {
+                        $conflict.children().first().attr('disabled', true);
+                        $conflict.css('color', 'grey');
+                    }
                 }
-            }
-        });
+            });
+        }
     } else {
-        console.log('Main Conference');
+        total -= parseInt($activityPrice);
+        $total.text(`$${total}`);
+        if ($activityName !== 'all') {
+            const regex = /([a-zA-Z]+) (\d\d?[a-z][a-z]-\d\d?[a-z][a-z])/g;
+            const $activityTime = $(activity).parent('label').text().match(regex)[0];
+            $activities.each(function(index) {
+                const $conflict = $(this);
+                const $conflictName = $conflict.children().first().attr('name');
+                const $conflictPrice = $conflict.text().match(priceRegex)[0];
+                if ($conflictName !== 'all' && $conflictName !== $activityName) {
+                    const $conflictTime = $conflict.text().match(regex)[0];
+                    if ($activityTime === $conflictTime) {
+                        $conflict.children().first().attr('disabled', false);
+                        $conflict.css('color', 'black');
+                    }
+                }
+            });
+        }
     }
     return true;
 };
 
 function checkPaymentMethod(paymentMethod) {
+    if (paymentMethod === 'credit card') {
+        $creditCard.show();
+        $paypal.hide();
+        $bitcoin.hide();
+        $submit.show();
+    } else if (paymentMethod === 'paypal') {
+        $creditCard.hide();
+        $paypal.show();
+        $bitcoin.hide();
+        $submit.show();
+    } else if (paymentMethod === 'bitcoin') {
+        $creditCard.hide();
+        $paypal.hide();
+        $bitcoin.show();
+        $submit.show();
+    } else {
+        $creditCard.hide();
+        $paypal.hide();
+        $bitcoin.hide();
+        $submit.hide();
+    }
     return true;
 };
 
 function isValidCCNumber(ccNum) {
-    return true;
+    const regex = /^\d{13,16}$/;
+    return regex.test(ccNum);
 };
 
 function isValidZip(ccZip) {
-    return true;
+    const regex = /^\d{5}$/;
+    return regex.test(ccZip);
 };
 
 function isValidCVV(cvvNum) {
-    return true;
+    const regex = /^\d\d\d$/;
+    return regex.test(cvvNum);
 };
 
 function checkSubmissionComplete() {
@@ -108,10 +160,11 @@ function checkSubmissionComplete() {
 }
 
 $name.trigger('focus');
-$otherJob.hide();
+$otherJobField.hide();
 $creditCard.hide();
 $paypal.hide();
 $bitcoin.hide();
+$submit.hide();
 
 $name.focusout((e)=>{
     console.log(isValidName(e.target.value));
@@ -132,13 +185,10 @@ $tshirtDesigns.change((e)=>{
 
 
 $activities.on('click', (e)=>{
-    console.log(e.target);
-    // console.log(e.target.checked);
-    // console.log(e.target.parentElement.textContent);
     console.log(checkActivityDates(e.target));
 });
 
-$paymentMethods.on('click', (e)=>{
+$payment.change((e)=>{
     console.log(checkPaymentMethod(e.target.value));
 });
 
@@ -146,9 +196,41 @@ $ccNumber.focusout((e)=>{
     console.log(isValidCCNumber(e.target.value));
 });
 
+$zipCode.focusout((e)=>{
+    console.log(isValidZip(e.target.value));
+});
+
+$cvvNumber.focusout((e)=>{
+    console.log(isValidCVV(e.target.value));
+});
+
 $submit.on('click', (e)=>{
-    e.preventDefault();
-    console.log(checkSubmissionComplete());
+    if (!isValidName($name.val())) {
+        e.preventDefault();
+        console.log(`invalid name`);
+    };
+    if (!isValidEmail($email.val())) {
+        e.preventDefault();
+        console.log(`invalid email`);
+    };
+    if (total < 100) {
+        e.preventDefault();
+        console.log(`invalid activities`);
+    };
+    if ($creditCard.attr('style') !== "none") {
+        if (isValidCCNumber($ccNumber.val()) === false) {
+            e.preventDefault();
+            console.log(`invalid ccNumber`);
+        };
+        if (isValidZip($zipCode.val()) === false) {
+            e.preventDefault();
+            console.log(`invalid zipcode`);
+        };
+        if (isValidCVV($cvvNumber.val()) === false) {
+            e.preventDefault();
+            console.log(`invalid cvv number`);
+        };
+    }
 });
 
 
