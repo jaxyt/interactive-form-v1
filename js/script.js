@@ -1,6 +1,8 @@
 const $form = $('form');
 const $name = $('#name');
+const $nameError = $(`<span id="name-error"></span>`);
 const $email = $('#mail');
+const $emailError = $(`<span id="email-error"></span>`);
 const $jobRole = $('#title');
 const $jobRoles = $('#title').children();
 const $otherJob = $('#other');
@@ -9,31 +11,57 @@ const $tshirtSizes = $('#size');
 const $tshirtDesigns = $('#design');
 const $tshirtColors = $('#color');
 const $activities = $('fieldset.activities').children('label');
+const $activityError = $(`<span id="activity-error"></span>`);
 let total = 0;
 const $payment = $('#payment');
 const $paymentMethods = $('#payment').children();
 const $creditCard = $('#credit-card');
 const $ccFields = $creditCard.children();
 const $ccNumber = $('#cc-num');
+const $ccNumError = $(`<span id="ccNum-error"></span>`);
 const $zipCode = $('#zip');
+const $zipError = $(`<span id="zip-error"></span>`);
 const $cvvNumber = $('#cvv');
+const $cvvError = $(`<span id="cvv-error"></span>`);
 const $paypal = $creditCard.next();
 const $bitcoin = $paypal.next();
 const $submit = $('button[type="submit"]');
 let $total = $(`<span>${total}</span>`);
 
 $('fieldset.activities').append($total);
+$('label[for="name"]').append($nameError);
+$('label[for="mail"]').append($emailError);
+$('fieldset.activities').children('legend').first().append($activityError);
+$('label[for="cc-num"]').append($ccNumError);
+$('label[for="zip"]').append($zipError);
+$('label[for="cvv"]').append($cvvError);
 
 
 
 
 function isValidName(name) {
     const regex = /^[a-zA-Z]+ [a-zA-Z]+$/;
+    if (!regex.test(name)) {
+        $nameError.text(` names must be comprised of two words separated by a space`)
+        $nameError.css('color', 'red');
+        $name.css('border-color', 'red');
+    } else {
+        $nameError.text(``);
+        $name.css('border-color', 'grey');
+    }
     return regex.test(name);
 };
 
 function isValidEmail(email) {
     const regex = /^[^@]+@[^@.]+\.[a-z]+$/i;
+    if (!regex.test(email)) {
+        $emailError.text(` a valid email looks like "john@email.com"`)
+        $emailError.css('color', 'red');
+        $email.css('border-color', 'red');
+    } else {
+        $emailError.text(``);
+        $email.css('border-color', 'grey');
+    }
     return regex.test(email);
 };
 
@@ -56,6 +84,7 @@ function checkShirtDesign(theme) {
                 $(this).hide();
             }
         })
+        $tshirtColors.show();
     } else if (theme === 'heart js') {
         $tshirtColors.children().each(function (index) {
             if (/\(JS Puns shirt only\)/g.test($(this).text())) {
@@ -64,6 +93,9 @@ function checkShirtDesign(theme) {
                 $(this).show();
             }
         })
+        $tshirtColors.show()
+    } else {
+        $tshirtColors.hide()
     }
     return true;
 }
@@ -161,16 +193,18 @@ function checkSubmissionComplete() {
 
 $name.trigger('focus');
 $otherJobField.hide();
+$tshirtColors.hide();
 $creditCard.hide();
 $paypal.hide();
 $bitcoin.hide();
 $submit.hide();
 
-$name.focusout((e)=>{
+$name.keyup((e)=>{
     console.log(isValidName(e.target.value));
 });
 
-$email.focusout((e)=>{
+
+$email.keyup((e)=>{
     console.log(isValidEmail(e.target.value));
 });
 
@@ -192,43 +226,69 @@ $payment.change((e)=>{
     console.log(checkPaymentMethod(e.target.value));
 });
 
-$ccNumber.focusout((e)=>{
+$ccNumber.keyup((e)=>{
     console.log(isValidCCNumber(e.target.value));
 });
 
-$zipCode.focusout((e)=>{
+$zipCode.keyup((e)=>{
     console.log(isValidZip(e.target.value));
 });
 
-$cvvNumber.focusout((e)=>{
+$cvvNumber.keyup((e)=>{
     console.log(isValidCVV(e.target.value));
 });
 
 $submit.on('click', (e)=>{
+    e.preventDefault();
+    console.log($cvvNumber.val());
     if (!isValidName($name.val())) {
-        e.preventDefault();
         console.log(`invalid name`);
     };
     if (!isValidEmail($email.val())) {
-        e.preventDefault();
         console.log(`invalid email`);
     };
     if (total < 100) {
-        e.preventDefault();
-        console.log(`invalid activities`);
+        $activityError.text(' You must select at least one activity');
+        $activityError.css('color', 'red');
+    } else {
+        $activityError.text('');
     };
     if ($creditCard.attr('style') !== "none") {
         if (isValidCCNumber($ccNumber.val()) === false) {
-            e.preventDefault();
-            console.log(`invalid ccNumber`);
+
+            $ccNumError.text(` a valid credit card number is between 13 and 16 digits long`);
+            $ccNumError.css('color', 'red');
+            $ccNumber.css('border-color', 'red');
+        } else {
+            $ccNumError.text(``);
+            $ccNumber.css('border-color', 'grey');
         };
         if (isValidZip($zipCode.val()) === false) {
-            e.preventDefault();
-            console.log(`invalid zipcode`);
+
+            $zipError.text(` a valid zip code consists of 5 digits`);
+            $zipError.css('color', 'red');
+            $zipCode.css('border-color', 'red');
+        } else {
+            $zipError.text(``);
+            $zipCode.css('border-color', 'grey');
         };
         if (isValidCVV($cvvNumber.val()) === false) {
-            e.preventDefault();
-            console.log(`invalid cvv number`);
+            if ($cvvNumber.val().length === 0) {
+                $cvvError.text(` the cvv number is the 3 digit code on the back of your card`);
+                $cvvError.css('color', 'red');
+                $cvvNumber.css('border-color', 'red');
+            } else if ($cvvNumber.val().length === 1 || $cvvNumber.val().length === 2) {
+                $cvvError.text(` this is not long enough to be a cvv number, it must be exactly 3 digits`);
+                $cvvError.css('color', 'red');
+                $cvvNumber.css('border-color', 'red');
+            } else if ($cvvNumber.val().length > 3) {
+                $cvvError.text(` this is more than 3 digits long, it is not a cvv number`);
+                $cvvError.css('color', 'red');
+                $cvvNumber.css('border-color', 'red');
+            }
+        } else {
+            $cvvError.text(``);
+            $cvvNumber.css('border-color', 'grey');
         };
     }
 });
