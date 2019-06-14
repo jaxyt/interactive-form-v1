@@ -204,7 +204,7 @@ $payment.val('credit card');
 $creditCard.show();
 $paypal.hide();
 $bitcoin.hide();
-$submit.hide();
+$submit.show();
 
 
 //these place all the necessary event listeners to trigger the previous functions
