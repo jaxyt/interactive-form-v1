@@ -265,7 +265,7 @@ $submit.on('click', (e)=>{
     } else {
         $activityError.text('');
     };
-    if ($creditCard.attr('style') !== "none") {
+    if ($payment.val() === 'credit card') {
         if (isValidCCNumber($ccNumber.val()) === false) {
             $ccNumError.text(` a valid credit card number is between 13 and 16 digits long`);
             $ccNumError.css('color', 'red');
